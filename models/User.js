@@ -4,7 +4,7 @@ let bcrypt = require('bcrypt')
 
 let userSchema = new Schema({
     name: String,
-    email: { type: String, unique: true, require: true },
+    email: { type: String , unique: true, require: true },
     isVerified: { type: Boolean, default: false },
     password: { type: String, minlength: 4, require: true },
     age: Number,
@@ -17,10 +17,11 @@ let userSchema = new Schema({
 
 
 userSchema.pre('save', function (next) {
-    console.log(this.password)
+
     //hashing the password
     if (this.password && this.isModified('password')) {
         bcrypt.hash(this.password, 10, (err, hashed) => {
+            console.log(hashed)
             if (err) return next(err)
             this.password = hashed
             return next();

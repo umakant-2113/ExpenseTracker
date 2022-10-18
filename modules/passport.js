@@ -16,6 +16,7 @@ passport.use(
     },
     (email, password, done) => {
       User.findOne({ email: email }, (err, user) => {
+
         if (err) return done(err);
         //no user
         if (!user) {
@@ -25,7 +26,7 @@ passport.use(
           //varify password
           user.varifyPassword(password, (err, result) => {
             if (err) return done(err);
-            console.log('error no 28');
+      
             //no result
             if (!result) {
               return done(null, false, { message: 'Password wrong' });
@@ -77,47 +78,60 @@ passport.use(
 );
 
 // //google login
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'https://u-expense-tracker.herokuapp.com/auth/google/callback'
-}, (accessToken, refreshTOken, profile, done) => {
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: '/google/callback/auth',
+    },
+    (accessToken, refreshTOken, profile, done) => {
 
-    User.findOne({ email: profile._json.email }, (err, user) => {
-        if (err) return done(err)
+      User.findOne({ email: profile._json.email }, (err, user) => {
+     
+        if (err) return done(err);
         //no user
         //no user
         if (!user) {
-            return done(null, false, { message: 'Invalid Email' })
+          return done(null, false, { message: 'Invalid Email' });
         }
-        done(null, user)
-    })
-
-}))
+        done(null, user);
+      });
+    }
+  )
+);
 
 //github login
-passport.use(new GitHubStrategy({
-    clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    callbackURL: 'https://u-expense-tracker.herokuapp.com/auth/github/callback'
-}, (accessToken, refreshTOken, profile, done) => {
-    User.findOne({ email: profile._json.email }, (err, user) => {
-        if (err) return done(err)
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+      callbackURL:
+        '/auth/github/callback',
+    },
+    (accessToken, refreshTOken, profile, done) => {
+      console.log(profile, done);
+      
+      User.findOne({ email: profile._json.email }, (err, user) => {
+        console.log(user, 'userdata');
+        if (err) return done(err);
         //no user
         if (!user) {
-            return done(null, false, { message: 'Invalid Email' })
+          return done(null, false, { message: 'Invalid Email' });
         }
-        done(null, user)
-    })
-
-}))
+        done(null, user);
+      });
+    }
+  )
+);
 
 passport.serializeUser((user, done) => {
-    return done(null, user.id)
-})
+  return done(null, user.id);
+});
 
 passport.deserializeUser((id, done) => {
-    User.findById(id, (err, user) => {
-        done(null, user)
-    })
-})
+  User.findById(id, (err, user) => {
+    done(null, user);
+  });
+});

@@ -14,7 +14,7 @@ var auth = require('./middlewares/auth');
 require('./modules/passport');
 
 //mongoose connect
-mongoose.connect(process.env.DATABASE_URL, (err) =>
+mongoose.connect('mongodb://127.0.0.1/Expense-Tracker' , (err) =>
   console.log(err ? err : 'connected true')
 );
 

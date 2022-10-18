@@ -22,36 +22,29 @@ router.get('/register', (req, res) => {
 });
 
 //capture the data
-router.post('/', async (req, res, next) => {
+router.post('/', (req, res, next) => {
   req.body.emailToken = Str.random(25);
+
   User.create(req.body, (err, user) => {
-    if (err) {
-      if (err.name === 'MongoServerError') {
-        req.flash('error', 'This email is already exist');
-        return res.redirect('/users/register');
-      }
+    if (err) return next(err);
 
-      if (err.name === 'ValidationError') {
-        req.flash('error', err.message);
-        return res.redirect('/users/register');
-      }
-    }
-
-    transporter = nodemailer.createTransport({
+    let transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
+        user: 'umakantcoder143@gmail.com',
+        pass: '727517@@1',
       },
     });
 
+    console.log(user.emailToken, 'this is email token', user.email);
+
     let mailOptions = {
-      from: process.env.EMAIL,
+      from: 'umakantcoder143@gmail.com',
       to: user.email,
       subject: 'Varify your email',
       text: `
       Hello thanks for registration on our site.
-      http://localhost:4000/users/varify-email?token=${user.emailToken}
+      http://localhost:5000/users/varify-email?token=${user.emailToken}
       `,
       html: `
       <h1>Hello </h>
@@ -61,19 +54,15 @@ router.post('/', async (req, res, next) => {
       `,
     };
 
-    try {
-      transporter.sendMail(mailOptions, function (err, info) {
-        if (err) {
-          console.log(err);
-          req.flash('error', 'something went wrong');
-          return res.redirect('/');
-        }
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        req.flash('error', 'something went wrong');
+        return res.redirect('/');
+      } else {
         req.flash('error', 'please check your email to varify account');
         return res.redirect('/');
-      });
-    } catch (error) {
-      console.log(error);
-    }
+      }
+    });
   });
 });
 
@@ -81,14 +70,13 @@ router.post('/', async (req, res, next) => {
 router.get('/varify-email', async (req, res, next) => {
   try {
     let user = await User.findOne({ emailToken: req.query.token });
-
-    console.log(user);
-
+    console.log(user, 'verify user data ');
     //no user
     if (!user) {
       req.flash('error', 'Token is invalid. please contact us for assist');
       return res.redirect('/');
     }
+
     (user.emailToken = null), (user.isVerified = true);
     await user.save();
     req.flash('error', 'Varification success');
@@ -403,3 +391,17 @@ router.post('/expense', (req, res, next) => {
 });
 
 module.exports = router;
+
+// if (err) {
+//   if (err.name === 'MongoServerError') {
+//     req.flash('error', 'This email is already exist');
+//     console.log('inside already exist');
+//     return res.redirect('/users/register');
+//   }
+
+//   if (err.name === 'ValidationError') {
+//     req.flash('error', err.message);
+//     console.log('inside validation error');
+//     return res.redirect('/users/register');
+// }
+// }
