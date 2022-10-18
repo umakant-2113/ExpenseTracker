@@ -16,7 +16,6 @@ passport.use(
     },
     (email, password, done) => {
       User.findOne({ email: email }, (err, user) => {
-
         if (err) return done(err);
         //no user
         if (!user) {
@@ -26,7 +25,7 @@ passport.use(
           //varify password
           user.varifyPassword(password, (err, result) => {
             if (err) return done(err);
-      
+
             //no result
             if (!result) {
               return done(null, false, { message: 'Password wrong' });
@@ -48,13 +47,13 @@ passport.use(
             subject: 'Varify your email',
             text: `
                 Hello thanks for registration on our site.
-                http://localhost:3000/users/varify-email?token=${user.emailToken}
+                http://localhost:2000/users/varify-email?token=${user.emailToken}
                 `,
             html: `
                 <h1>Hello </h>
                 <p> Thanks for registration on our site.</p>
                 <p> Please click the link below to varify your account</p>
-                <a href="http://localhost:3000/users/varify-email?token=${user.emailToken}">Varify your account</a>
+                <a href="http://localhost:2000/users/varify-email?token=${user.emailToken}">Varify your account</a>
                 `,
           };
 
@@ -87,8 +86,12 @@ passport.use(
     },
     (accessToken, refreshTOken, profile, done) => {
 
-      User.findOne({ email: profile._json.email }, (err, user) => {
-     
+      console.log(profile, done);
+
+      console.log(profile.email, "this is email address ")
+
+      User.findOne({ email: profile.email }, (err, user) => {
+        console.log(user, "user data for ")
         if (err) return done(err);
         //no user
         //no user
@@ -107,14 +110,15 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL:
-        '/auth/github/callback',
+      callbackURL: '/auth/github/callback',
     },
     (accessToken, refreshTOken, profile, done) => {
-      console.log(profile, done);
-      
+  
+
       User.findOne({ email: profile._json.email }, (err, user) => {
+
         console.log(user, 'userdata');
+
         if (err) return done(err);
         //no user
         if (!user) {

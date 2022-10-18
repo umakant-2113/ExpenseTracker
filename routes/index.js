@@ -10,7 +10,6 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/failure', (req, res) => {
-
   res.redirect('/');
 });
 
@@ -24,7 +23,9 @@ router.get('/success', (req, res) => {
 router.get(
   '/auth/google',
   passport.authenticate('google', {
-    scope: ['profile', 'email'],
+    
+    scope: ['profile' , 'email'],
+
   })
 );
 

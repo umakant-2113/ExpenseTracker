@@ -31,20 +31,20 @@ router.post('/', (req, res, next) => {
     let transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'umakantcoder143@gmail.com',
-        pass: '727517@@1',
+        user: 'lodhiumakant800@gmail.com',
+        pass: process.env.PASSWORD,
       },
     });
 
     console.log(user.emailToken, 'this is email token', user.email);
 
     let mailOptions = {
-      from: 'umakantcoder143@gmail.com',
+      from: 'lodhiumakant800@gmail.com',
       to: user.email,
       subject: 'Varify your email',
       text: `
       Hello thanks for registration on our site.
-      http://localhost:5000/users/varify-email?token=${user.emailToken}
+      http://localhost:4000/users/varify-email?token=${user.emailToken}
       `,
       html: `
       <h1>Hello </h>
