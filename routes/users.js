@@ -114,6 +114,7 @@ router.get('/forgot', (req, res, next) => {
 router.post('/forgot', (req, res, next) => {
   //delete the old credentials from OTP
   Otp.deleteMany({}, (err, code) => {
+    console.log(err)
     if (err) return next(err);
   });
 
